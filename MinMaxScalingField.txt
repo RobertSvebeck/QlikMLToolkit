@@ -1,0 +1,23 @@
+Sub MinMaxScalingField(table,field)
+
+	temp:
+    LOAD
+    	max($(field)) as max,
+        min($(field)) as min
+    resident $(table) where not isnull($(field));
+    
+    Let max = peek('max',-1,'temp');
+	Let min = peek('min',-1,'temp');
+
+    drop table temp;
+
+    left join($(table))
+    Load 
+      Row,
+      $(min) as $(field)_min,
+      $(max) as $(field)_max,
+      ($(field)-$(min))/($(max)-$(min)) as $(field)_scaled
+         
+    resident $(table);
+ 
+End sub
